@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catatan Program Keluarga</title>
+<meta name="theme-color" content="#2b2a6b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Catatan Keluarga">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf7f0;--card:#ffffff;--ink:#22223a;--muted:#77748a;--line:#ece6dc;
+--night:#5b5bd6;--night-soft:#ecebff;--dawn:#e8873a;--dawn-soft:#fff0e2;--water:#2f9ee0;--water-soft:#e3f3fd;--sleep:#8b5cf6;--sleep-soft:#f1eaff;--note:#2fa37a;--note-soft:#e2f6ee;--chore:#16a3a3;--chore-soft:#def5f5;--sport:#d9488f;--sport-soft:#fde8f1;--screen:#f59e0b;--screen-soft:#fff4d6;--bad:#e05a4f;--bad-soft:#fde9e7;--good:#2fa37a;--good-soft:#e2f6ee}
+@media (prefers-color-scheme:dark){:root{--bg:#16161f;--card:#20202c;--ink:#efeef6;--muted:#a3a1b6;--line:#33323f;--night-soft:#2a2a4d;--dawn-soft:#3b2a1d;--water-soft:#18324a;--sleep-soft:#2e2447;--note-soft:#173528;--chore-soft:#173838;--sport-soft:#3d1f2e;--screen-soft:#3b2f14;--bad-soft:#3d2220;--good-soft:#173528}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Nunito,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:96px}
+.hero{position:relative;max-width:640px;margin:0 auto;overflow:hidden;border-radius:0 0 28px 28px}
+.hero svg{display:block;width:100%;height:auto}
+.hero .txt{position:absolute;left:20px;right:20px;top:18px;color:#fff}
+.hero h1{margin:0;font-size:22px;font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+.hero .greet{font-size:14px;opacity:.92;font-weight:600}
+.hero .pill{display:inline-block;margin-top:8px;background:rgba(255,255,255,.2);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.35);padding:4px 12px;border-radius:999px;font-size:12.5px;font-weight:700}
+main{max-width:640px;margin:0 auto;padding:14px 14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 2px 0 rgba(0,0,0,.03)}
+.ch{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.ic svg{width:28px;height:28px}
+.ch h2{margin:0;font-size:16.5px;font-weight:800}
+.ch p{margin:0;color:var(--muted);font-size:12.5px}
+.night .ic{background:var(--night-soft)}.dawn .ic{background:var(--dawn-soft)}.water .ic{background:var(--water-soft)}.sleep .ic{background:var(--sleep-soft)}.note .ic{background:var(--note-soft)}
+.chore .ic{background:var(--chore-soft)}.sport .ic{background:var(--sport-soft)}
+.chore{border-top:4px solid var(--chore)}.sport{border-top:4px solid var(--sport)}
+.screen{border-top:4px solid var(--screen)}.screen .ic{background:var(--screen-soft)}.st.sc{background:var(--screen-soft)}
+.hm{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--muted)}
+.hm input{width:76px;height:44px;border:2px solid var(--line);border-radius:14px;padding:0 10px;font:inherit;font-weight:800;font-size:17px;background:var(--bg);color:var(--ink);text-align:center}
+.hm input:focus{outline:none;border-color:var(--screen)}
+.screen textarea:focus{border-color:var(--screen)}
+.tasks{display:grid;gap:8px}
+.task{display:flex;align-items:center;gap:12px;padding:11px 12px;border:2px solid var(--line);border-radius:16px;cursor:pointer;user-select:none;font-weight:700;font-size:14px}
+.task input{position:absolute;opacity:0;pointer-events:none}
+.task .em{font-size:24px;line-height:1}
+.task .tx{flex:1}
+.task .bx{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex:0 0 auto}
+.task:has(input:checked){background:var(--chore-soft);border-color:var(--chore)}
+.task:has(input:checked) .bx{background:var(--chore);border-color:var(--chore)}
+.task:has(input:checked) .bx::after{content:"✓";font-weight:800}
+.task small{display:block;color:var(--muted);font-weight:600;font-size:12px}
+.sport .task:has(input:checked){background:var(--sport-soft);border-color:var(--sport)}
+.sport .task:has(input:checked) .bx{background:var(--sport);border-color:var(--sport)}
+.chips.pos label:has(input:checked){background:var(--sport-soft);border-color:var(--sport)}
+.tiles.four{grid-template-columns:repeat(4,1fr);gap:8px}
+.tiles.four .tile{font-size:12.5px;padding:10px 2px}
+.soon:not(.open)>*:not(.ch):not(.soonbar){display:none}
+.soonbar{width:100%;border:2px dashed var(--line);background:var(--bg);color:var(--muted);border-radius:14px;padding:10px 12px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;text-align:left}
+.soon.open .soonbar{margin-bottom:12px}
+.fld{display:block;margin-top:12px;font-weight:700;font-size:14px}
+.fld input{display:block;width:100%;height:44px;margin-top:6px;border:2px solid var(--line);border-radius:14px;padding:0 12px;font:inherit;font-weight:700;background:var(--bg);color:var(--ink)}
+.fld textarea{margin-top:6px;min-height:110px;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{color:var(--muted);font-size:12.5px;margin-top:8px}
+.sleepbig.sbig b{font-size:30px;color:var(--sport);font-weight:800}
+.st.c{background:var(--chore-soft)}.st.p{background:var(--sport-soft)}
+.night{border-top:4px solid var(--night)}.dawn{border-top:4px solid var(--dawn)}.water{border-top:4px solid var(--water)}.sleep{border-top:4px solid var(--sleep)}.note{border-top:4px solid var(--note)}
+.q{font-weight:700;margin:14px 0 8px;font-size:14px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tiles.three{grid-template-columns:1fr 1fr 1fr}
+.tiles input,.chips input{position:absolute;opacity:0;pointer-events:none}
+.tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border:2px solid var(--line);border-radius:16px;cursor:pointer;user-select:none;font-weight:700;font-size:13.5px;text-align:center;transition:transform .12s,background .12s}
+.tile .em{font-size:28px;line-height:1}
+.tile:active{transform:scale(.96)}
+.tile:has(input:checked){background:var(--good-soft);border-color:var(--good)}
+.tile.neg:has(input:checked){background:var(--bad-soft);border-color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{padding:8px 12px;border:2px solid var(--line);border-radius:999px;cursor:pointer;user-select:none;font-size:13.5px;font-weight:600}
+.chips label:has(input:checked){background:var(--bad-soft);border-color:var(--bad)}
+textarea{width:100%;min-height:70px;border:2px solid var(--line);border-radius:14px;padding:10px 12px;font:inherit;background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{outline:none;border-color:var(--note)}
+.datebar{display:flex;align-items:center;gap:8px}
+.datebar button{width:44px;height:44px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;font-weight:800;cursor:pointer}
+.datebar input{flex:1;height:44px;border:2px solid var(--line);border-radius:14px;padding:0 10px;font:inherit;font-weight:700;background:var(--card);color:var(--ink);text-align:center}
+.daylabel{margin-top:8px;color:var(--muted);font-size:13px;text-align:center}
+.tag{display:inline-block;background:var(--good-soft);color:var(--good);font-weight:800;font-size:11.5px;padding:2px 8px;border-radius:999px;margin-left:4px}
+.save{width:100%;padding:15px;border:0;border-radius:16px;background:linear-gradient(135deg,#5b5bd6,#8b5cf6 55%,#e8873a);color:#fff;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 6px 18px rgba(91,91,214,.3)}
+.save:active{transform:scale(.98)}
+.save:disabled{opacity:.55}
+.status{text-align:center;font-size:13px;color:var(--muted);min-height:20px;margin-top:8px}
+.hide{display:none}
+/* water */
+.glasses{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.glass{border:0;background:none;padding:0;cursor:pointer;transition:transform .12s}
+.glass:active{transform:scale(.9)}
+.glass svg{width:100%;height:auto;display:block}
+.glass .lvl{transition:y .25s,height .25s}
+.wtotal{display:flex;align-items:baseline;justify-content:center;gap:6px;margin-top:10px}
+.wtotal b{font-size:30px;color:var(--water);font-weight:800}
+.wtotal span{color:var(--muted);font-weight:700}
+.mini{display:flex;justify-content:center;gap:8px;margin-top:6px}
+.mini button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:4px 12px;font-weight:800;cursor:pointer}
+/* sleep */
+.sleepbig{display:flex;align-items:center;justify-content:center;gap:10px}
+.sleepbig b{font-size:34px;color:var(--sleep);font-weight:800}
+.sleepbig span{color:var(--muted);font-weight:700}
+.zz{font-size:26px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:999px;margin:14px 0 4px;background:linear-gradient(90deg,var(--line) 0%,var(--line) 57.1%,var(--sleep-soft) 57.1%,var(--sleep-soft) 71.4%,var(--line) 71.4%)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--sleep);border:4px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--sleep);border:4px solid #fff;cursor:pointer}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:700}
+.unset{opacity:.45}
+/* weekly */
+.weeks{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.weeks button{flex:0 0 auto;padding:9px 13px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;cursor:pointer;font-family:inherit}
+.weeks button.on{background:var(--night);border-color:var(--night);color:#fff}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.st{border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.st .em{font-size:22px}
+.st b{font-size:22px;font-weight:800}
+.st small{color:var(--muted);font-size:12px;font-weight:600}
+.st.n{background:var(--night-soft)}.st.d{background:var(--dawn-soft)}.st.w{background:var(--water-soft)}.st.s{background:var(--sleep-soft)}
+.ok{color:var(--good)}.no{color:var(--bad)}
+.check label{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;font-weight:600;cursor:pointer}
+.check label:last-child{border-bottom:0}
+.check input{width:22px;height:22px;margin:0;flex:0 0 auto;accent-color:var(--good)}
+/* summary */
+.dots{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:11px;color:var(--muted);font-weight:700}
+.dot{height:38px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:4px}
+.dot.g{background:var(--good-soft)}.dot.r{background:var(--bad-soft)}
+.dot.v{font-size:13px;font-weight:800;color:var(--ink)}
+.sub2{font-size:13.5px;font-weight:800;margin:14px 0 8px}
+.sub2:first-of-type{margin-top:0}
+.ringrow{display:flex;align-items:center;gap:16px}
+.ring{width:92px;height:92px;flex:0 0 auto}
+.phase b{display:block;font-size:18px;font-weight:800}
+.phase span{color:var(--muted);font-size:13px}
+.badges{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.badge{border-radius:16px;padding:12px;text-align:center}
+.badge .em{font-size:30px}
+.badge b{display:block;font-size:22px;font-weight:800}
+.badge small{color:var(--muted);font-weight:700;font-size:12px}
+.bars{display:grid;gap:12px}
+.brow{display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;font-size:12px;font-weight:800}
+.track{position:relative;height:12px;background:var(--bg);border-radius:6px;margin:3px 0}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--night)}
+.fill.s{background:var(--dawn)}
+.tgt{position:absolute;top:-3px;bottom:-3px;width:3px;border-radius:2px;background:var(--ink)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap;font-weight:700}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.banner{background:var(--bad-soft);border:2px solid var(--bad);border-radius:16px;padding:10px 12px;font-size:13px;margin-bottom:12px;font-weight:600}
+ul.plain{margin:0;padding-left:0;list-style:none;font-size:14px;font-weight:600}
+ul.plain li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
+ul.plain li:last-child{border-bottom:0}
+.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:6px 0}
+.empty .em{font-size:34px;display:block}
+/* tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--card);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+.tabbar div{max-width:640px;margin:0 auto;display:flex;gap:6px}
+.tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:14px;text-decoration:none;color:var(--muted);font-weight:800;font-size:12px}
+.tabbar a .em{font-size:22px;filter:grayscale(1);opacity:.6}
+.tabbar a.on{background:var(--night-soft);color:var(--night)}
+.tabbar a.on .em{filter:none;opacity:1}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);width:max-content;max-width:88vw;text-align:center;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:20;animation:pop .35s ease-out}
+@keyframes pop{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+</style>
+</head>
+<body>
+<header class="hero">
+<svg viewBox="0 0 640 210" role="img" aria-label="Langit fajar dengan bulan sabit dan masjid">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2a6b"/><stop offset=".55" stop-color="#6a4fb3"/><stop offset="1" stop-color="#f2a65a"/></linearGradient>
+<linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2e6e"/><stop offset="1" stop-color="#241d4a"/></linearGradient>
+</defs>
+<rect width="640" height="210" fill="url(#sky)"/>
+<g fill="#fff"><circle cx="70" cy="120" r="1.6" opacity=".8"/><circle cx="150" cy="96" r="1.2" opacity=".7"/><circle cx="250" cy="118" r="1.4" opacity=".6"/><circle cx="330" cy="88" r="1.8" opacity=".9"/><circle cx="420" cy="110" r="1.2" opacity=".7"/><circle cx="600" cy="98" r="1.6" opacity=".8"/><circle cx="560" cy="140" r="1.1" opacity=".6"/><circle cx="200" cy="150" r="1.1" opacity=".5"/></g>
+<g transform="translate(560 52)"><circle r="24" fill="#ffe6a6"/><circle cx="10" cy="-6" r="21" fill="#4a3d93"/></g>
+<path d="M0 182 Q120 160 240 176 T480 170 T640 168 V210 H0Z" fill="url(#hill)" opacity=".85"/>
+<g fill="#1c1640">
+<rect x="372" y="120" width="12" height="70" rx="2"/><path d="M370 122 L378 100 L386 122Z"/><circle cx="378" cy="96" r="3"/>
+<rect x="520" y="120" width="12" height="70" rx="2"/><path d="M518 122 L526 100 L534 122Z"/><circle cx="526" cy="96" r="3"/>
+<path d="M400 190 V150 Q400 140 410 140 H500 Q510 140 510 150 V190Z"/>
+<path d="M415 142 Q415 106 455 104 Q495 106 495 142Z"/>
+<rect x="453" y="88" width="4" height="18"/><path d="M455 82 a5 5 0 1 0 4 8 a4 4 0 1 1 -4 -8z"/>
+</g>
+<g fill="#ffd58a" opacity=".9"><rect x="425" y="160" width="10" height="16" rx="5"/><rect x="450" y="160" width="10" height="16" rx="5"/><rect x="475" y="160" width="10" height="16" rx="5"/></g>
+</svg>
+<div class="txt"><div class="greet" id="greet">Assalamu'alaikum</div><h1>Catatan Program Keluarga</h1><span class="pill" id="pill">23 Nov 2026 – 17 Jan 2027</span></div>
+</header>
+<main id="app"></main>
+<nav class="tabbar"><div>
+<a href="#harian" data-tab="harian"><span class="em">📝</span>Harian</a>
+<a href="#mingguan" data-tab="mingguan"><span class="em">📅</span>Mingguan</a>
+<a href="#ringkasan" data-tab="ringkasan"><span class="em">🏆</span>Ringkasan</a>
+<a href="#atur" data-tab="atur"><span class="em">⚙️</span>Atur</a>
+</div></nav>
+<script>
+(function(){
+var KEY='catatan-keluarga-v1',storeOk=true;
+function loadState(){try{var t=localStorage.getItem(KEY);if(t)return JSON.parse(t)}catch(e){storeOk=false}return {daily:{},weekly:{}}}
+var state=loadState();
+state.daily=state.daily||{};state.weekly=state.weekly||{};
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+var cfg=state.config=state.config||{};
+var START='2026-11-23',DAY=864e5,MAXG=12,REF_MINUM=+cfg.minum||8,REF_TIDUR=+cfg.tidur||8,JAM=cfg.jam||'21.00';
+var MONTHS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+var DAYS=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+var DAYS_FULL=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+var CELAH=[['WA di HP','💬'],['Browser HP/tablet','🌐'],['Laptop','💻'],['Perangkat lain','📱'],['Minta tambahan waktu','⏳']];
+var CEK=['Ayah dan ibu memberi jawaban yang sama','Konsekuensi dijalankan tanpa marah','Tidak ada tambahan waktu di luar kesepakatan','HP orang tua ikut dikumpulkan','Kepatuhan anak diakui dengan kata-kata','Ayah ikut Subuh berjamaah bersama anak'];
+var QS=[['😊','Apa yang paling mudah dijalankan minggu ini?'],['🤔','Malam mana yang paling sulit berhenti, dan apa yang terjadi saat itu?'],['⚖️','Ada aturan yang terasa tidak adil atau tidak masuk akal?'],['🚀','Satu hal yang ingin dicoba minggu depan?']];
+var TUGAS_H=cfg.tugasH&&cfg.tugasH.length?cfg.tugasH:[['kamar','Merapikan kamar','🛏️'],['piring','Mencuci piring setelah makan','🍽️'],['baju','Menyiapkan baju sendiri','👕']];
+var TUGAS_M=cfg.tugasM?cfg.tugasM:[['cuci','Mencuci & menyetrika baju sendiri','🧺'],['masak','Memasak satu menu','🍳']];
+var JENIS=[['Jalan pagi','🚶'],['Lari','🏃'],['Renang','🏊'],['Bersepeda','🚴'],['Bulu tangkis','🏸'],['Lainnya','⚽']];
+var REF_OLAHRAGA=+cfg.olahraga||60;
+var REF_WA=+cfg.wa||120;
+var MOOD=[['senang','Senang','😄'],['biasa','Biasa','🙂'],['capek','Capek','🥱'],['kesal','Kesal','😠']];
+function fmtHM(m){if(m==null)return '–';m=Math.round(m);var h=Math.floor(m/60),mm=m%60;return h?(h+'j'+(mm?' '+mm+'m':'')):mm+'m'}
+function hm(name,val){return '<div class="hm"><input type="number" inputmode="numeric" min="0" max="24" name="'+name+'J" value="'+(val==null?'':Math.floor(val/60))+'" placeholder="0"><span>jam</span><input type="number" inputmode="numeric" min="0" max="59" name="'+name+'M" value="'+(val==null?'':val%60)+'" placeholder="0"><span>menit</span></div>'}
+var IC={
+chore:'<svg viewBox="0 0 32 32"><rect x="14.5" y="3" width="3" height="16" rx="1.5" fill="#8a5a2b"/><path d="M9 19h14l2 9H7z" fill="#16a3a3"/><path d="M11 22v5M16 22v5M21 22v5" stroke="#def5f5" stroke-width="1.6" stroke-linecap="round"/><circle cx="26" cy="8" r="1.6" fill="#f5c451"/><circle cx="6" cy="11" r="1.2" fill="#f5c451"/></svg>',
+sport:'<svg viewBox="0 0 32 32"><circle cx="19" cy="6" r="3.2" fill="#d9488f"/><path d="M17 10l-4 7 5 3-2 8M13 17l-6 1M18 12l6 4M18 20l6 3" stroke="#d9488f" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+night:'<svg viewBox="0 0 32 32"><rect x="9" y="5" width="14" height="23" rx="3" fill="#5b5bd6"/><rect x="11" y="8" width="10" height="15" rx="1.5" fill="#c9c8ff"/><path d="M26 4a5 5 0 1 0 3 8 4 4 0 1 1-3-8z" fill="#f5c451"/></svg>',
+dawn:'<svg viewBox="0 0 32 32"><circle cx="16" cy="20" r="8" fill="#f5c451"/><rect x="2" y="20" width="28" height="9" fill="#e8873a"/><path d="M10 29V22q6-7 12 0v7z" fill="#7a3f12"/><rect x="15.2" y="11" width="1.6" height="5" fill="#7a3f12"/></svg>',
+water:'<svg viewBox="0 0 32 32"><path d="M8 5h16l-2 23H10z" fill="#d6eefc" stroke="#2f9ee0" stroke-width="2" stroke-linejoin="round"/><path d="M9.6 14h12.8l-1.2 13H10.8z" fill="#2f9ee0"/><circle cx="14" cy="19" r="1.2" fill="#fff" opacity=".8"/></svg>',
+sleep:'<svg viewBox="0 0 32 32"><rect x="3" y="16" width="26" height="8" rx="2" fill="#8b5cf6"/><rect x="3" y="11" width="9" height="6" rx="2" fill="#d9c9ff"/><rect x="3" y="24" width="2.5" height="4" fill="#5b3fb0"/><rect x="26.5" y="24" width="2.5" height="4" fill="#5b3fb0"/><text x="18" y="12" font-size="9" font-weight="800" fill="#8b5cf6" font-family="sans-serif">z</text><text x="23" y="7" font-size="7" font-weight="800" fill="#8b5cf6" font-family="sans-serif">z</text></svg>',
+note:'<svg viewBox="0 0 32 32"><rect x="6" y="4" width="18" height="24" rx="3" fill="#e2f6ee" stroke="#2fa37a" stroke-width="2"/><path d="M10 11h10M10 16h10M10 21h6" stroke="#2fa37a" stroke-width="2" stroke-linecap="round"/><path d="M22 20l6-6 2 2-6 6-3 1z" fill="#f5c451" stroke="#b07d12" stroke-width="1"/></svg>',
+cal:'<svg viewBox="0 0 32 32"><rect x="4" y="7" width="24" height="21" rx="4" fill="#ecebff" stroke="#5b5bd6" stroke-width="2"/><rect x="4" y="7" width="24" height="7" rx="3" fill="#5b5bd6"/><rect x="9" y="3" width="2.5" height="7" rx="1.2" fill="#22223a"/><rect x="20.5" y="3" width="2.5" height="7" rx="1.2" fill="#22223a"/><circle cx="11" cy="20" r="2" fill="#e8873a"/><circle cx="16" cy="20" r="2" fill="#2fa37a"/><circle cx="21" cy="20" r="2" fill="#2f9ee0"/></svg>',
+talk:'<svg viewBox="0 0 32 32"><path d="M4 7a3 3 0 0 1 3-3h13a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-8l-5 4v-4H7a3 3 0 0 1-3-3z" fill="#e8873a"/><path d="M12 20h9l5 4v-4h0a3 3 0 0 0 3-3v-6a3 3 0 0 0-3-3h-1v7a5 5 0 0 1-5 5z" fill="#2f9ee0"/></svg>',
+check:'<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#2fa37a"/><path d="M10 16.5l4 4 8-9" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+screen:'<svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="3" fill="#f59e0b"/><rect x="10.5" y="6.5" width="11" height="17" rx="1.5" fill="#fff4d6"/><circle cx="16" cy="15" r="4.5" fill="none" stroke="#b45309" stroke-width="1.6"/><path d="M16 12.5V15l1.8 1.2" stroke="#b45309" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="16" cy="26.2" r="1.2" fill="#fff4d6"/></svg>',
+flag:'<svg viewBox="0 0 32 32"><rect x="6" y="4" width="2.5" height="25" rx="1.2" fill="#22223a"/><path d="M8.5 5h17l-4 6 4 6h-17z" fill="#8b5cf6"/></svg>'};
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function pad(n){return n<10?'0'+n:''+n}
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function toT(s){return Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10))}
+function fromT(t){var d=new Date(t);return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate())}
+function addDays(s,n){return fromT(toT(s)+n*DAY)}
+function dow(s){return new Date(toT(s)).getUTCDay()}
+function nice(s){return DAYS_FULL[dow(s)]+', '+(+s.slice(8,10))+' '+MONTHS[+s.slice(5,7)-1]+' '+s.slice(0,4)}
+function short(s){return (+s.slice(8,10))+' '+MONTHS[+s.slice(5,7)-1]}
+function weekOf(s){var d=Math.floor((toT(s)-toT(START))/DAY);return d<0?0:Math.floor(d/7)+1}
+function weekRange(w){var a=addDays(START,(w-1)*7);return [a,addDays(a,6)]}
+function fmt(n){return n==null?'–':(Math.round(n*10)/10).toString().replace('.',',')}
+function phaseOf(w){
+  if(w<=0)return{nama:'Persiapan',em:'🧭',isi:'Susun aturan bersama, tutup celah teknis, sepakati cara bangun Subuh',patuh:null,subuh:null};
+  if(w<=2)return{nama:'Pembiasaan',em:'🌱',isi:'Cek setiap malam; Subuh dibangunkan ayah',patuh:5,subuh:4};
+  if(w<=4)return{nama:'Konsistensi',em:'💪',isi:'Cek acak 2–3 kali; Subuh dengan alarm sendiri',patuh:6,subuh:5};
+  if(w<=8)return{nama:'Kepercayaan',em:'🌟',isi:'Kelonggaran bertahap; Subuh bangun sendiri',patuh:6,subuh:6};
+  return{nama:'Selesai',em:'🎉',isi:'Program 8 minggu sudah lewat; tinjau ulang kesepakatan',patuh:6,subuh:6};
+}
+function weekStats(w){
+  var r=weekRange(w),scS=0,scN=0,waS=0,waN=0,waOk=0,scNotes=[],patuh=0,langgar=0,subuh=0,tercatat=0,celah={},mS=0,mN=0,tS=0,tN=0,tH=0,tM={},oS=0,oN=0,o60=0,otot=0,sendiri=0;
+  for(var i=0;i<7;i++){var d=state.daily[addDays(r[0],i)];if(!d)continue;tercatat++;
+    (d.tugas||[]).forEach(function(id){if(TUGAS_H.some(function(t){return t[0]===id}))tH++;else if(TUGAS_M.some(function(t){return t[0]===id}))tM[id]=1});
+    if(typeof d.olahraga==='number'){oS+=d.olahraga;oN++;if(d.olahraga>=REF_OLAHRAGA)o60++}if(d.otot)otot++;if(d.pengisi==='anak')sendiri++;
+    if(typeof d.screen==='number'){scS+=d.screen;scN++}if(typeof d.wa==='number'){waS+=d.wa;waN++;if(d.wa<=REF_WA)waOk++}if(d.catatanSt)scNotes.push([addDays(r[0],i),d.catatanSt]);
+    if(typeof d.minum==='number'){mS+=d.minum;mN++}if(typeof d.tidur==='number'){tS+=d.tidur;tN++}
+    if(d.malam==='patuh')patuh++;if(d.malam==='langgar'){langgar++;(d.celah||[]).forEach(function(c){celah[c]=(celah[c]||0)+1})}
+    if(d.subuh==='ya')subuh++;}
+  return{patuh:patuh,langgar:langgar,subuh:subuh,tercatat:tercatat,celah:celah,minum:mN?mS/mN:null,minumN:mN,tidur:tN?tS/tN:null,tidurN:tN,tugasH:tH,tugasM:Object.keys(tM).length,tugasMSet:tM,olahraga:oN?oS/oN:null,olahragaN:oN,o60:o60,otot:otot,screen:scN?scS/scN:null,wa:waN?waS/waN:null,waN:waN,waOk:waOk,scNotes:scNotes,sendiri:sendiri};
+}
+function weeklyDoneElsewhere(date,id){var w=weekOf(date);if(!w)return null;var r=weekRange(w);
+  for(var i=0;i<7;i++){var s=addDays(r[0],i);if(s===date)continue;var d=state.daily[s];if(d&&(d.tugas||[]).indexOf(id)>-1)return s}return null}
+function streak(key,good){var t=todayStr(),s=state.daily[t]&&state.daily[t][key]?t:addDays(t,-1),n=0;
+  while(state.daily[s]&&state.daily[s][key]===good){n++;s=addDays(s,-1)}return n}
+function fokus(w){return{tugas:w>=3,olahraga:w>=5}}
+function fokusTxt(w){return 'aturan malam & Subuh'+(w>=3?', tugas rumah':'')+(w>=5?', olahraga':'')}
+function tgtTugas(w){var n=TUGAS_H.length*7;return w<3?null:Math.round(n*(w<=4?2/3:w<=6?0.8:0.95))}
+function tgtOlahraga(w){return w<5?null:(w<=6?Math.min(30,REF_OLAHRAGA):REF_OLAHRAGA)}
+function soonbar(n){return '<button type="button" class="soonbar">⏳ Jadi target mulai minggu '+n+'. Ketuk kalau mau mengisi dari sekarang.</button>'}
+function walkBack(ok){var t=todayStr(),s=state.daily[t]?t:addDays(t,-1),n=0;while(state.daily[s]&&ok(state.daily[s])){n++;s=addDays(s,-1)}return n}
+function streakNum(key,ref){return walkBack(function(d){return typeof d[key]==='number'&&d[key]>=ref})}
+function streakTugas(){return walkBack(function(d){return TUGAS_H.every(function(t){return (d.tugas||[]).indexOf(t[0])>-1})})}
+function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v)}catch(e){return null}}
+function emOf(c){for(var i=0;i<CELAH.length;i++)if(CELAH[i][0]===c)return CELAH[i][1];return '•'}
+
+var tab='harian',curDate=ss('pk-date')||todayStr(),curWeek=+(ss('pk-week')||0)||Math.min(8,Math.max(1,weekOf(todayStr())));
+var app=document.getElementById('app');
+
+function head(cls,title,sub){return '<div class="ch"><div class="ic">'+IC[cls]+'</div><div><h2>'+title+'</h2>'+(sub?'<p>'+sub+'</p>':'')+'</div></div>'}
+function tiles(name,opts,val,three){
+  return '<div class="tiles'+(three?' '+(three===true?'three':three):'')+'">'+opts.map(function(o){return '<label class="tile'+(o[3]?' neg':'')+'"><input type="radio" name="'+name+'" value="'+o[0]+'"'+(val===o[0]?' checked':'')+'><span class="em">'+o[2]+'</span>'+o[1]+'</label>'}).join('')+'</div>';
+}
+function banner(){return !storeOk?'<div class="banner">⚠️ Penyimpanan di HP ini tidak tersedia. Jangan pakai mode penyamaran (Incognito), lalu buka lagi aplikasinya.</div>':''}
+function glassSvg(full){return '<svg viewBox="0 0 40 52"><path d="M6 4h28l-3.5 44h-21z" fill="'+(full?'#d6eefc':'none')+'" stroke="'+(full?'#2f9ee0':'#c9c4bb')+'" stroke-width="2.5" stroke-linejoin="round"/>'+(full?'<path d="M9 16h22l-2.6 31H11.6z" fill="#2f9ee0"/><circle cx="16" cy="26" r="2" fill="#fff" opacity=".7"/><circle cx="22" cy="34" r="1.4" fill="#fff" opacity=".6"/>':'')+'</svg>'}
+
+function renderHarian(){
+  var d=state.daily[curDate]||{},w=weekOf(curDate),ph=phaseOf(w);
+  var minum=typeof d.minum==='number'?d.minum:null,tidur=typeof d.tidur==='number'?d.tidur:null,olahraga=typeof d.olahraga==='number'?d.olahraga:null;
+  var fk=fokus(w);
+  app.innerHTML=banner()+
+  '<div class="card"><div class="datebar"><button id="prev" aria-label="Hari sebelumnya">‹</button><input type="date" id="date" value="'+curDate+'"><button id="next" aria-label="Hari berikutnya">›</button></div>'+
+  '<div class="daylabel">'+nice(curDate)+'<br>'+ph.em+' '+(w?'Minggu '+w+' · ':'')+'Fase '+ph.nama+(state.daily[curDate]?' <span class="tag">✓ sudah dicatat</span>':'')+'</div></div>'+
+  '<form id="f">'+
+  '<div class="card night">'+head('night','Aturan malam','Perangkat dikumpulkan pukul '+esc(JAM))+
+  tiles('malam',[['patuh','Patuh','😊'],['langgar','Melanggar','😕',1]],d.malam)+
+  '<div id="lg" class="'+(d.malam==='langgar'?'':'hide')+'"><div class="q">Lewat celah apa?</div><div class="chips">'+
+  CELAH.map(function(c){return '<label><input type="checkbox" name="celah" value="'+esc(c[0])+'"'+((d.celah||[]).indexOf(c[0])>-1?' checked':'')+'><span>'+c[1]+' '+esc(c[0])+'</span></label>'}).join('')+'</div>'+
+  '<div class="q">Konsekuensi sudah dijalankan?</div>'+tiles('konsekuensi',[['ya','Sudah','👍'],['tidak','Belum','⏳',1]],d.konsekuensi)+'</div></div>'+
+  '<div class="card dawn">'+head('dawn','Subuh berjamaah','Catat setelah sholat Subuh')+
+  tiles('subuh',[['ya','Ikut berjamaah','🕌'],['tidak','Terlewat','😴',1]],d.subuh)+
+  '<div id="sb" class="'+(d.subuh==='ya'?'':'hide')+'"><div class="q">Di mana?</div>'+tiles('tempat',[['rumah','Rumah','🏠'],['masjid','Masjid','🕌']],d.tempat)+
+  '<div class="q">Cara bangun</div>'+tiles('bangun',[['sendiri','Bangun sendiri','⏰'],['dibangunkan','Dibangunkan','🙋']],d.bangun)+'</div></div>'+
+  '<div class="card water">'+head('water','Total minum','Ketuk gelas · 1 gelas ≈ 250 ml')+
+  '<input type="hidden" name="minum" value="'+(minum==null?'':minum)+'"><div class="glasses" id="gl"></div>'+
+  '<div class="wtotal"><b id="wn">'+fmt(minum)+'</b><span>gelas</span><span id="wl"></span></div>'+
+  '<div class="mini"><button type="button" id="wminus">− 1</button><button type="button" id="wplus">+ 1</button><button type="button" id="wclear">Kosongkan</button></div>'+
+  '<div class="daylabel">Acuan sekitar '+REF_MINUM+' gelas sehari</div></div>'+
+  '<div class="card sleep">'+head('sleep','Total tidur','Termasuk tidur lagi setelah Subuh dan tidur siang')+
+  '<div class="sleepbig" id="sbig"><span class="zz">😴</span><b id="tn">'+fmt(tidur)+'</b><span>jam</span></div>'+
+  '<input type="range" id="tr" min="0" max="14" step="0.5" value="'+(tidur==null?7.5:tidur)+'"'+(tidur==null?' class="unset"':'')+'>'+
+  '<input type="hidden" name="tidur" value="'+(tidur==null?'':tidur)+'">'+
+  '<div class="scale"><span>0</span><span>4</span><span>8</span><span>10</span><span>14 jam</span></div>'+
+  '<div class="daylabel">Area ungu = acuan 8–10 jam untuk usia remaja</div></div>'+
+  '<div class="card chore'+(fk.tugas?'':((d.tugas||[]).length?' soon open':' soon'))+'">'+head('chore','Kemandirian','Tugas rumah yang dikerjakan sendiri hari ini')+(fk.tugas?'':soonbar(3))+
+  '<div class="q" style="margin-top:0">Tugas harian</div><div class="tasks">'+TUGAS_H.map(function(t){return task('tugas',t[0],t[2],t[1],(d.tugas||[]).indexOf(t[0])>-1,'')}).join('')+'</div>'+
+  '<div class="q">Tugas mingguan (cukup sekali seminggu)</div><div class="tasks">'+TUGAS_M.map(function(t){var o=weeklyDoneElsewhere(curDate,t[0]);
+    return task('tugas',t[0],t[2],t[1],(d.tugas||[]).indexOf(t[0])>-1,o?'✓ sudah dikerjakan '+DAYS_FULL[dow(o)]+' minggu ini':'')}).join('')+'</div></div>'+
+  '<div class="card sport'+(fk.olahraga?'':(olahraga!=null?' soon open':' soon'))+'">'+head('sport','Olahraga','Acuan rata-rata '+REF_OLAHRAGA+' menit sehari')+(fk.olahraga?'':soonbar(5))+
+  '<input type="hidden" name="olahraga" value="'+(olahraga==null?'':olahraga)+'">'+
+  '<div class="sleepbig sbig"><span class="zz" id="oem">'+(olahraga>=REF_OLAHRAGA?'🏅':'🏃')+'</span><b id="on">'+fmt(olahraga)+'</b><span>menit</span></div>'+
+  '<div class="mini"><button type="button" data-o="-15">− 15</button><button type="button" data-o="15">+ 15</button><button type="button" data-o="30">+ 30</button><button type="button" data-o="0">Kosongkan</button></div>'+
+  '<div class="q">Jenisnya</div><div class="chips pos">'+JENIS.map(function(j){return '<label><input type="checkbox" name="jenis" value="'+j[0]+'"'+((d.jenis||[]).indexOf(j[0])>-1?' checked':'')+'><span>'+j[1]+' '+j[0]+'</span></label>'}).join('')+'</div>'+
+  '<div class="q">Penguatan otot (target 3× seminggu)</div><div class="tasks">'+task('otot','1','💪','Ada latihan penguatan otot',!!d.otot,'Push-up, plank, squat, naik tangga')+'</div></div>'+
+  '<div class="card screen">'+head('screen','Screen time','Salin dari laporan Family Link hari ini')+
+  '<div class="q" style="margin-top:0">📱 Total screen time</div>'+hm('sc',typeof d.screen==='number'?d.screen:null)+
+  '<div class="q">💬 WhatsApp</div>'+hm('wa',typeof d.wa==='number'?d.wa:null)+
+  '<div class="daylabel">Kesepakatan: WhatsApp maksimal '+fmtHM(REF_WA)+' sehari</div>'+
+  '<div class="q">Catatan screen time</div><textarea name="catatanSt" placeholder="Ada pemakaian setelah 21.00? Aplikasi lain yang paling lama?">'+esc(d.catatanSt)+'</textarea></div>'+
+  '<div class="card note">'+head('note','Perasaan & catatan','Paling baik diisi anak sendiri')+
+  '<div class="q" style="margin-top:0">Perasaan hari ini</div>'+tiles('mood',MOOD,d.mood,'four')+
+  '<div class="q">Siapa yang mengisi catatan hari ini?</div>'+tiles('pengisi',[['anak','Anak sendiri','🙋'],['ortu','Orang tua','🧑‍🤝‍🧑']],d.pengisi)+
+  '<div class="q">Catatan</div><textarea name="catatan" placeholder="Apa yang terjadi hari ini? Ada yang patut dipuji?">'+esc(d.catatan)+'</textarea></div>'+
+  '<button class="save" type="submit">💾 Simpan catatan hari ini</button><div class="status" id="st"></div></form>';
+  document.getElementById('prev').onclick=function(){setDate(addDays(curDate,-1))};
+  document.getElementById('next').onclick=function(){setDate(addDays(curDate,1))};
+  document.getElementById('date').onchange=function(e){if(e.target.value)setDate(e.target.value)};
+  var f=document.getElementById('f');
+  // water
+  function drawW(){var v=parseFloat(f.minum.value);var n=isNaN(v)?0:v,html='';
+    var count=Math.max(REF_MINUM,Math.min(MAXG,Math.ceil(n)));if(count<MAXG&&n>=count)count=Math.min(MAXG,count+1);
+    for(var i=1;i<=Math.max(count,REF_MINUM);i++)html+='<button type="button" class="glass" data-g="'+i+'" aria-label="'+i+' gelas">'+glassSvg(i<=n)+'</button>';
+    document.getElementById('gl').innerHTML=html;document.getElementById('wn').textContent=isNaN(v)?'–':fmt(v);
+    document.getElementById('wl').textContent=isNaN(v)?'':'· ≈ '+fmt(v*0.25)+' L';
+    [].forEach.call(document.querySelectorAll('[data-g]'),function(b){b.onclick=function(){var g=+b.dataset.g,cur=parseFloat(f.minum.value)||0;f.minum.value=(g===cur?g-1:g);drawW()}});}
+  function setW(v){f.minum.value=v==null?'':Math.max(0,Math.min(30,v));drawW()}
+  document.getElementById('wplus').onclick=function(){setW((parseFloat(f.minum.value)||0)+1)};
+  document.getElementById('wminus').onclick=function(){setW((parseFloat(f.minum.value)||0)-1)};
+  document.getElementById('wclear').onclick=function(){setW(null)};
+  drawW();
+  [].forEach.call(f.querySelectorAll('.soonbar'),function(b){b.onclick=function(){b.parentNode.classList.toggle('open')}});
+  // sport
+  [].forEach.call(f.querySelectorAll('[data-o]'),function(b){b.onclick=function(){var dlt=+b.dataset.o,cur=parseFloat(f.olahraga.value);
+    var v=dlt===0?null:Math.max(0,Math.min(600,(isNaN(cur)?0:cur)+dlt));f.olahraga.value=v==null?'':v;
+    document.getElementById('on').textContent=fmt(v);document.getElementById('oem').textContent=v>=REF_OLAHRAGA?'🏅':'🏃'}});
+  // sleep
+  var tr=document.getElementById('tr');
+  tr.oninput=function(){tr.classList.remove('unset');f.tidur.value=tr.value;document.getElementById('tn').textContent=fmt(+tr.value);
+    var v=+tr.value;document.querySelector('#sbig .zz').textContent=v>=8&&v<=10?'😊':(v<8?'🥱':'😴')};
+  if(tidur!=null)tr.oninput();
+  f.addEventListener('change',function(){var m=f.querySelector('[name=malam]:checked'),s=f.querySelector('[name=subuh]:checked');
+    document.getElementById('lg').className=m&&m.value==='langgar'?'':'hide';document.getElementById('sb').className=s&&s.value==='ya'?'':'hide'});
+  f.onsubmit=function(e){e.preventDefault();
+    var g=function(n){var x=f.querySelector('[name='+n+']:checked');return x?x.value:''};
+    var rec={malam:g('malam'),subuh:g('subuh'),catatan:f.catatan.value.trim()};
+    var md=g('mood'),pg=g('pengisi');if(md)rec.mood=md;if(pg)rec.pengisi=pg;
+    var mn=parseFloat(f.minum.value),td=parseFloat(f.tidur.value);
+    if(!isNaN(mn))rec.minum=mn;if(!isNaN(td))rec.tidur=td;
+    var ol=parseFloat(f.olahraga.value);if(!isNaN(ol))rec.olahraga=ol;
+    var tg=[].map.call(f.querySelectorAll('[name=tugas]:checked'),function(x){return x.value});if(tg.length)rec.tugas=tg;
+    var jn=[].map.call(f.querySelectorAll('[name=jenis]:checked'),function(x){return x.value});if(jn.length)rec.jenis=jn;
+    if(f.querySelector('[name=otot]:checked'))rec.otot=true;
+    var hmv=function(n){var j=f[n+'J'].value,m=f[n+'M'].value;if(j===''&&m==='')return null;return Math.max(0,(parseInt(j,10)||0)*60+(parseInt(m,10)||0))};
+    var sc=hmv('sc'),wa=hmv('wa');if(sc!=null)rec.screen=sc;if(wa!=null)rec.wa=wa;
+    var cs=f.catatanSt.value.trim();if(cs)rec.catatanSt=cs;
+    if(!rec.malam&&!rec.subuh&&!rec.catatan&&rec.minum==null&&rec.tidur==null&&rec.olahraga==null&&!rec.tugas&&!rec.otot&&rec.screen==null&&rec.wa==null&&!rec.catatanSt&&!rec.mood){msg('Isi minimal satu bagian dulu ya.');return}
+    if(rec.malam==='langgar'){rec.celah=[].map.call(f.querySelectorAll('[name=celah]:checked'),function(x){return x.value});rec.konsekuensi=g('konsekuensi')}
+    if(rec.subuh==='ya'){rec.tempat=g('tempat');rec.bangun=g('bangun')}
+    state.daily[curDate]=rec;
+    var nH=(rec.tugas||[]).filter(function(id){return TUGAS_H.some(function(t){return t[0]===id})}).length;
+    var cheer=rec.malam==='patuh'&&rec.subuh==='ya'&&nH===TUGAS_H.length?'🏆 Luar biasa! Patuh, berjamaah, dan semua tugas beres':rec.olahraga>=REF_OLAHRAGA&&nH===TUGAS_H.length?'🏅 Keren! Olahraga cukup dan tugas rumah beres':rec.malam==='patuh'&&rec.subuh==='ya'?'🌟 Mantap! Patuh dan Subuh berjamaah':rec.malam==='patuh'?'😊 Tersimpan. Malam ini patuh!':rec.subuh==='ya'?'🕌 Tersimpan. Alhamdulillah ikut berjamaah':'✅ Catatan tersimpan';
+    save(cheer);};
+}
+function task(name,val,em,label,checked,sub){return '<label class="task"><input type="checkbox" name="'+name+'" value="'+val+'"'+(checked?' checked':'')+'><span class="em">'+em+'</span><span class="tx">'+label+(sub?'<small>'+sub+'</small>':'')+'</span><span class="bx"></span></label>'}
+function setDate(s){curDate=s;ss('pk-date',s);renderHarian()}
+
+function renderMingguan(){
+  var w=curWeek,r=weekRange(w),st=weekStats(w),ph=phaseOf(w),v=state.weekly[w]||{},cek=v.cek||[];
+  var pOk=st.patuh>=ph.patuh,sOk=st.subuh>=ph.subuh,tT=tgtTugas(w),tO=tgtOlahraga(w);
+  app.innerHTML=banner()+
+  '<div class="card">'+head('cal','Evaluasi minggu '+w,short(r[0])+' – '+short(r[1])+' · '+ph.em+' Fase '+ph.nama)+
+  '<div class="weeks">'+[1,2,3,4,5,6,7,8].map(function(i){return '<button data-w="'+i+'" class="'+(i===w?'on':'')+'">M'+i+(state.weekly[i]?' ✓':'')+'</button>'}).join('')+'</div></div>'+
+  '<div class="card">'+head('check','Hasil otomatis',st.tercatat+' dari 7 hari dicatat · '+st.sendiri+' diisi anak sendiri')+'<div class="stat">'+
+  '<div class="st n"><span class="em">🌙</span><small>Malam patuh</small><b class="'+(st.tercatat?(pOk?'ok':'no'):'')+'">'+st.patuh+' / 7</b><small>target ≥ '+ph.patuh+'</small></div>'+
+  '<div class="st d"><span class="em">🕌</span><small>Subuh berjamaah</small><b class="'+(st.tercatat?(sOk?'ok':'no'):'')+'">'+st.subuh+' / 7</b><small>target ≥ '+ph.subuh+'</small></div>'+
+  '<div class="st w"><span class="em">💧</span><small>Rata-rata minum</small><b class="'+(st.minum==null?'':(st.minum>=REF_MINUM?'ok':'no'))+'">'+fmt(st.minum)+' gelas</b><small>acuan ± '+REF_MINUM+'</small></div>'+
+  '<div class="st s"><span class="em">😴</span><small>Rata-rata tidur</small><b class="'+(st.tidur==null?'':(st.tidur>=REF_TIDUR?'ok':'no'))+'">'+fmt(st.tidur)+' jam</b><small>acuan 8–10</small></div>'+
+  '<div class="st c"><span class="em">🧹</span><small>Tugas harian</small><b class="'+(tT!=null&&st.tercatat?(st.tugasH>=tT?'ok':'no'):'')+'">'+st.tugasH+' / '+(TUGAS_H.length*7)+'</b><small>'+(tT==null?'belum jadi target':'target ≥ '+tT)+'</small></div>'+
+  '<div class="st c"><span class="em">🧺</span><small>Tugas mingguan</small><b class="'+(tT!=null&&st.tercatat?(st.tugasM>=TUGAS_M.length?'ok':'no'):'')+'">'+st.tugasM+' / '+TUGAS_M.length+'</b><small>'+TUGAS_M.map(function(t){return (st.tugasMSet[t[0]]?'✓ ':'○ ')+t[2]}).join('  ')+'</small></div>'+
+  '<div class="st p"><span class="em">🏃</span><small>Rata-rata olahraga</small><b class="'+(tO==null||st.olahraga==null?'':(st.olahraga>=tO?'ok':'no'))+'">'+fmt(st.olahraga)+' mnt</b><small>'+(tO==null?'belum jadi target':'target rata-rata ≥ '+tO+' mnt')+'</small></div>'+
+  '<div class="st p"><span class="em">💪</span><small>Penguatan otot</small><b class="'+(w>=7&&st.tercatat?(st.otot>=3?'ok':'no'):'')+'">'+st.otot+' / 3</b><small>'+(w>=7?'target 3× seminggu':'belum jadi target')+'</small></div>'+
+  '<div class="st sc"><span class="em">📱</span><small>Rata-rata screen time</small><b>'+fmtHM(st.screen)+'</b><small>dari Family Link</small></div>'+
+  '<div class="st sc"><span class="em">💬</span><small>Rata-rata WhatsApp</small><b class="'+(st.wa==null?'':(st.wa<=REF_WA?'ok':'no'))+'">'+fmtHM(st.wa)+'</b><small>'+st.waOk+' dari '+st.waN+' hari ≤ '+fmtHM(REF_WA)+'</small></div></div>'+
+  (st.langgar?'<div class="daylabel">Celah minggu ini: '+Object.keys(st.celah).map(function(k){return emOf(k)+' '+esc(k)+' ('+st.celah[k]+')'}).join(', ')+'</div>':'')+
+  (st.scNotes.length?'<div class="q">📱 Catatan screen time</div><ul class="plain">'+st.scNotes.map(function(n){return '<li><span>'+DAYS_FULL[dow(n[0])]+'</span><span style="text-align:right;max-width:70%">'+esc(n[1])+'</span></li>'}).join('')+'</ul>':'')+'</div>'+
+  '<form id="f"><div class="card dawn">'+head('talk','Ngobrol bersama anak','10 menit, mulai dari yang berjalan baik')+
+  QS.map(function(q,i){return '<div class="q">'+q[0]+' '+q[1]+'</div><textarea name="q'+i+'">'+esc(v['q'+i])+'</textarea>'}).join('')+'</div>'+
+  '<div class="card note check">'+head('check','Cek diri orang tua','Centang yang sudah dijalankan')+CEK.map(function(c,i){return '<label><input type="checkbox" name="cek" value="'+i+'"'+(cek[i]?' checked':'')+'><span>'+c+'</span></label>'}).join('')+'</div>'+
+  '<div class="card chore">'+head('chore','Mengatur diri sendiri','Anak menyusun jadwal minggu depan: piano, belajar, tugas rumah, olahraga')+
+  tiles('jadwal',[['ya','Sudah disusun sendiri','🗓️'],['bantu','Masih dibantu','🤝'],['belum','Belum','⏳',1]],v.jadwal,true)+'</div>'+
+  '<div class="card sleep">'+head('flag','Keputusan minggu depan','')+tiles('keputusan',[['longgar','Tambah kelonggaran','🎁'],['tetap','Tetap','👍'],['ulang','Ulangi fase','🔁',1]],v.keputusan,true)+
+  '<div class="q">Catatan keputusan</div><textarea name="catatan">'+esc(v.catatan)+'</textarea></div>'+
+  '<button class="save" type="submit">💾 Simpan evaluasi minggu '+w+'</button><div class="status" id="st"></div></form>';
+  [].forEach.call(app.querySelectorAll('[data-w]'),function(b){b.onclick=function(){curWeek=+b.dataset.w;ss('pk-week',curWeek);renderMingguan()}});
+  var f=document.getElementById('f');
+  f.onsubmit=function(e){e.preventDefault();var rec={};QS.forEach(function(_,i){rec['q'+i]=f['q'+i].value.trim()});
+    var c=[];[].forEach.call(f.querySelectorAll('[name=cek]'),function(x){c[+x.value]=x.checked});rec.cek=c;
+    var k=f.querySelector('[name=keputusan]:checked');rec.keputusan=k?k.value:'';
+    var jd=f.querySelector('[name=jadwal]:checked');rec.jadwal=jd?jd.value:'';rec.catatan=f.catatan.value.trim();
+    state.weekly[w]=rec;save('📅 Evaluasi minggu '+w+' tersimpan');};
+}
+
+function ring(val,max,color){var r=38,c=2*Math.PI*r,p=max?Math.min(1,val/max):0;
+  return '<svg class="ring" viewBox="0 0 92 92"><circle cx="46" cy="46" r="'+r+'" fill="none" stroke="var(--line)" stroke-width="9"/><circle cx="46" cy="46" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(c*p)+' '+c+'" transform="rotate(-90 46 46)"/><text x="46" y="44" text-anchor="middle" font-size="20" font-weight="800" fill="var(--ink)" font-family="Nunito,sans-serif">'+val+'/'+max+'</text><text x="46" y="61" text-anchor="middle" font-size="10" font-weight="700" fill="var(--muted)" font-family="Nunito,sans-serif">hari dicatat</text></svg>'}
+
+function renderRingkasan(){
+  var t=todayStr(),w=weekOf(t),ph=phaseOf(w),html=banner(),ws=w>=1&&w<=8?weekStats(w):null;
+  html+='<div class="card night"><div class="ringrow">'+ring(ws?ws.tercatat:0,7,'var(--night)')+'<div class="phase"><b>'+ph.em+' Fase '+ph.nama+'</b><span>'+(w&&w<=8?'Minggu '+w+' dari 8 · ':'')+ph.isi+'<br>🎯 Fokus sekarang: '+(w>=1?fokusTxt(w):'persiapan')+'</span></div></div></div>';
+  html+='<div class="badges" style="margin-bottom:14px"><div class="badge" style="background:var(--night-soft)"><div class="em">🔥</div><b>'+streak('malam','patuh')+'</b><small>malam patuh berturut-turut</small></div>'+
+        '<div class="badge" style="background:var(--dawn-soft)"><div class="em">🕌</div><b>'+streak('subuh','ya')+'</b><small>Subuh berjamaah berturut-turut</small></div></div>';
+  var days=[];for(var i=6;i>=0;i--)days.push(addDays(t,-i));
+  var row=function(key,good,yes,no){return days.map(function(s){var d=state.daily[s],v=d&&d[key];
+    return '<div><div class="dot '+(!v?'':(v===good?'g':'r'))+'">'+(!v?'·':(v===good?yes:no))+'</div>'+DAYS[dow(s)]+'</div>'}).join('')};
+  var nrow=function(key,ref){return days.map(function(s){var d=state.daily[s],v=d&&typeof d[key]==='number'?d[key]:null;
+    return '<div><div class="dot v '+(v==null?'':(v>=ref?'g':'r'))+'">'+(v==null?'·':fmt(v))+'</div>'+DAYS[dow(s)]+'</div>'}).join('')};
+  html+='<div class="card">'+head('cal','7 hari terakhir','Hijau = sesuai target')+
+        '<div class="sub2">🌙 Aturan malam</div><div class="dots">'+row('malam','patuh','😊','😕')+'</div>'+
+        '<div class="sub2">🕌 Subuh berjamaah</div><div class="dots">'+row('subuh','ya','🕌','😴')+'</div>'+
+        '<div class="sub2">💧 Minum (gelas)</div><div class="dots">'+nrow('minum',REF_MINUM)+'</div>'+
+        '<div class="sub2">😴 Tidur (jam)</div><div class="dots">'+nrow('tidur',REF_TIDUR)+'</div>'+
+        '<div class="sub2">🙂 Perasaan</div><div class="dots">'+days.map(function(s){var d=state.daily[s],m=d&&d.mood,e='·';MOOD.forEach(function(o){if(o[0]===m)e=o[2]});return '<div><div class="dot">'+e+'</div>'+DAYS[dow(s)]+'</div>'}).join('')+'</div>'+
+        '<div class="sub2">🧹 Tugas harian (dari '+TUGAS_H.length+')</div><div class="dots">'+days.map(function(s){var d=state.daily[s];
+          var n=d?(d.tugas||[]).filter(function(id){return TUGAS_H.some(function(t){return t[0]===id})}).length:null;
+          return '<div><div class="dot v '+(n==null?'':(n>=TUGAS_H.length?'g':'r'))+'">'+(n==null?'·':n)+'</div>'+DAYS[dow(s)]+'</div>'}).join('')+'</div>'+
+        '<div class="sub2">🏃 Olahraga (menit)</div><div class="dots">'+nrow('olahraga',REF_OLAHRAGA)+'</div>'+
+        '<div class="sub2">💬 WhatsApp (menit)</div><div class="dots">'+days.map(function(s){var d=state.daily[s],v=d&&typeof d.wa==='number'?d.wa:null;
+          return '<div><div class="dot v '+(v==null?'':(v<=REF_WA?'g':'r'))+'">'+(v==null?'·':Math.round(v))+'</div>'+DAYS[dow(s)]+'</div>'}).join('')+'</div></div>';
+  html+='<div class="badges" style="margin-bottom:14px"><div class="badge" style="background:var(--chore-soft)"><div class="em">🧹</div><b>'+streakTugas()+'</b><small>hari semua tugas harian beres</small></div>'+
+        '<div class="badge" style="background:var(--sport-soft)"><div class="em">🏅</div><b>'+streakNum('olahraga',REF_OLAHRAGA)+'</b><small>hari olahraga ≥ '+REF_OLAHRAGA+' menit berturut-turut</small></div></div>';
+  var last=Math.min(8,Math.max(1,w));
+  html+='<div class="card">'+head('flag','Per minggu dibanding target','')+'<div class="legend"><span><i style="background:var(--night)"></i>Malam patuh</span><span><i style="background:var(--dawn)"></i>Subuh berjamaah</span><span><i style="background:var(--ink);width:3px"></i>Target</span></div><div class="bars">';
+  for(var k=1;k<=last;k++){var s=weekStats(k),p=phaseOf(k);
+    html+='<div class="brow"><div>M'+k+'</div><div><div class="track"><div class="fill" style="width:'+(s.patuh/7*100)+'%"></div><div class="tgt" style="left:'+(p.patuh/7*100)+'%"></div></div>'+
+    '<div class="track"><div class="fill s" style="width:'+(s.subuh/7*100)+'%"></div><div class="tgt" style="left:'+(p.subuh/7*100)+'%"></div></div></div></div>';}
+  html+='</div></div>';
+  var all={};Object.keys(state.daily).forEach(function(s){var d=state.daily[s];if(d.malam==='langgar')(d.celah||[]).forEach(function(c){all[c]=(all[c]||0)+1})});
+  var ks=Object.keys(all).sort(function(a,b){return all[b]-all[a]});
+  html+='<div class="card night">'+head('night','Celah yang paling sering','Fokus tutup yang paling atas')+(ks.length?'<ul class="plain">'+ks.map(function(c){return '<li><span>'+emOf(c)+' '+esc(c)+'</span><span>'+all[c]+'×</span></li>'}).join('')+'</ul>':'<div class="empty"><span class="em">🎉</span>Belum ada pelanggaran yang dicatat.</div>')+'</div>';
+  app.innerHTML=html;
+}
+
+function tLines(a){return a.map(function(t){return t[2]+' '+t[1]}).join('\n')}
+function parseLines(txt,old,pre){var out=[];txt.split('\n').forEach(function(l,i){l=l.trim();if(!l)return;var em='⭐',label=l,sp=l.indexOf(' ');
+  if(sp>0&&sp<=8&&!/[A-Za-z0-9]/.test(l.slice(0,sp))){em=l.slice(0,sp);label=l.slice(sp+1).trim()}
+  if(!label)return;var id=null;old.forEach(function(o){if(o[1]===label)id=o[0]});
+  out.push([id||(pre+Date.now().toString(36)+i),label,em])});return out}
+function renderAtur(){
+  app.innerHTML=banner()+
+  '<div class="card night">'+head('flag','Urutan mulai kebiasaan','Bertahap, supaya tidak terlalu berat di awal')+'<ul class="plain">'+
+  '<li><span>🌙 Aturan malam dan 🕌 Subuh</span><span>Minggu 1</span></li><li><span>🧹 Tugas rumah</span><span>Minggu 3</span></li>'+
+  '<li><span>🏃 Olahraga</span><span>Minggu 5</span></li><li><span>💧 Minum, 😴 tidur, 📱 screen time</span><span>dicatat saja</span></li></ul></div>'+
+  '<form id="f"><div class="card chore">'+head('chore','Daftar tugas rumah','Satu tugas per baris, boleh diawali emoji')+
+  '<label class="fld">Tugas harian<textarea name="th">'+esc(tLines(TUGAS_H))+'</textarea></label>'+
+  '<label class="fld">Tugas mingguan<textarea name="tm">'+esc(tLines(TUGAS_M))+'</textarea></label>'+
+  '<div class="hint">Tugas yang namanya diganti dihitung sebagai tugas baru.</div></div>'+
+  '<div class="card sleep">'+head('cal','Jam dan acuan','Sesuaikan dengan kesepakatan keluarga')+
+  '<label class="fld" style="margin-top:0">Jam perangkat dikumpulkan<input name="jam" value="'+esc(JAM)+'"></label>'+
+  '<div class="two"><label class="fld">Minum (gelas)<input name="minum" type="number" inputmode="decimal" min="1" max="20" value="'+REF_MINUM+'"></label>'+
+  '<label class="fld">Tidur minimal (jam)<input name="tidur" type="number" inputmode="decimal" min="4" max="12" step="0.5" value="'+REF_TIDUR+'"></label>'+
+  '<label class="fld">Olahraga (menit)<input name="olahraga" type="number" inputmode="numeric" min="10" max="300" value="'+REF_OLAHRAGA+'"></label>'+
+  '<label class="fld">WhatsApp maks (menit)<input name="wa" type="number" inputmode="numeric" min="0" max="600" value="'+REF_WA+'"></label></div></div>'+
+  '<button class="save" type="submit">💾 Simpan pengaturan</button><div class="status" id="st"></div></form>'+backupBlock();
+  var f=document.getElementById('f');
+  f.onsubmit=function(e){e.preventDefault();var th=parseLines(f.th.value,TUGAS_H,'h'),tm=parseLines(f.tm.value,TUGAS_M,'m');
+    if(!th.length){msg('Isi minimal satu tugas harian.');return}
+    state.config={tugasH:th,tugasM:tm,jam:f.jam.value.trim()||'21.00',minum:+f.minum.value||8,tidur:+f.tidur.value||8,olahraga:+f.olahraga.value||60,wa:+f.wa.value||120};
+    save('⚙️ Pengaturan tersimpan',true);};
+  wireBackup();
+}
+function msg(t){var el=document.getElementById('st');if(el)el.textContent=t}
+function toast(t){var el=document.createElement('div');el.className='toast';el.textContent=t;document.body.appendChild(el);setTimeout(function(){el.remove()},2600)}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));storeOk=true;return true}catch(e){storeOk=false;return false}}
+function save(cheer,reload){
+  if(!persist()){msg('Gagal menyimpan di HP ini. Pastikan bukan mode penyamaran dan memori HP tidak penuh.');return}
+  if(reload){ss('pk-toast',cheer||'✅ Tersimpan');location.reload();return}
+  toast(cheer||'✅ Tersimpan');route();window.scrollTo(0,0);
+}
+function backupBlock(){var n=Object.keys(state.daily).length;
+  return '<div class="card water">'+head('water','Cadangan data','Data hanya tersimpan di HP ini, '+n+' hari tercatat')+
+  '<button type="button" class="save" id="bk" style="background:var(--water);box-shadow:none">⬇️ Unduh cadangan</button>'+
+  '<label class="soonbar" style="display:block;margin-top:10px;text-align:center">📂 Pulihkan dari file cadangan<input type="file" id="rs" accept="application/json,.json" style="display:none"></label>'+
+  '<div class="hint">Unduh cadangan seminggu sekali, misalnya setelah evaluasi hari Minggu. Simpan filenya di Google Drive.</div><div class="status" id="bst"></div></div>'}
+function wireBackup(){var b=document.getElementById('bk');if(!b)return;
+  b.onclick=function(){var blob=new Blob([JSON.stringify(state,null,1)],{type:'application/json'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='cadangan-catatan-keluarga-'+todayStr()+'.json';document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);document.getElementById('bst').textContent='File cadangan diunduh ke folder Download.'};
+  document.getElementById('rs').onchange=function(e){var fl=e.target.files[0];if(!fl)return;var r=new FileReader();
+    r.onload=function(){try{var s=JSON.parse(r.result);if(!s||typeof s.daily!=='object')throw 0;
+      if(!window.__konfirm){window.__konfirm=1;document.getElementById('bst').textContent='Data di HP ini akan diganti isi file. Pilih file yang sama sekali lagi untuk melanjutkan.';e.target.value='';return}
+      state=s;state.weekly=state.weekly||{};save('📂 Data dipulihkan',true)}catch(x){document.getElementById('bst').textContent='File ini bukan cadangan catatan keluarga.'}};r.readAsText(fl)}}
+
+function greet(){var h=new Date().getHours(),g=h<4?'Selamat malam':h<11?'Selamat pagi':h<15?'Selamat siang':h<18?'Selamat sore':'Selamat malam';
+  var w=weekOf(todayStr()),ph=phaseOf(w);
+  document.getElementById('greet').textContent="Assalamu'alaikum · "+g;
+  document.getElementById('pill').textContent=ph.em+' Fase '+ph.nama+(w&&w<=8?' · Minggu '+w+'/8':'');}
+function route(){var h=(location.hash||'').slice(1);tab=['harian','mingguan','ringkasan','atur'].indexOf(h)>-1?h:'harian';
+  [].forEach.call(document.querySelectorAll('.tabbar a'),function(a){a.className=a.dataset.tab===tab?'on':''});
+  if(tab==='harian')renderHarian();else if(tab==='mingguan')renderMingguan();else if(tab==='ringkasan')renderRingkasan();else renderAtur();}
+window.addEventListener('hashchange',function(){route();window.scrollTo(0,0)});
+greet();route();
+var tq=ss('pk-toast');if(tq){ss('pk-toast',null);toast(tq)}
+if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
+})();
+</script>
+</body>
+</html>
