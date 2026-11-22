@@ -24,3 +24,12 @@ Aplikasi catatan harian untuk program kebiasaan keluarga: aturan malam, Subuh be
 | `icons/` | Ikon aplikasi |
 
 Setelah mengubah `index.html`, naikkan nomor versi `CACHE` di `sw.js` supaya HP mengambil versi baru.
+
+## Versi APK Android (untuk tablet Nara)
+
+Folder `android/` berisi aplikasi Android yang menjalankan catatan harian langsung dari dalam APK: tanpa internet, tanpa website, dan tidak bisa dipakai browsing.
+
+- APK dibuat otomatis oleh GitHub Actions (`.github/workflows/android.yml`) setiap ada perubahan di `android/`, lalu diterbitkan di halaman **Releases**.
+- Unduhan terbaru: https://github.com/danapramudya/Catatan-Keluarga/releases/latest/download/catatan-keluarga.apk
+- Kunci tanda tangan disimpan terenkripsi di `android/catatan.jks.enc`; kata sandinya ada di secret repo `CATATAN_KEY`. Jangan ganti kunci ini, supaya pembaruan bisa dipasang di atas versi lama tanpa menghapus catatan.
+- Isi aplikasi ada di `android/app/src/main/assets/index.html` (versi Nara: batas perangkat 22.00).

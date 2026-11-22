@@ -1,0 +1,63 @@
+name: Build APK Catatan Keluarga
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Siapkan kunci tanda tangan
+        env:
+          CATATAN_KEY: ${{ secrets.CATATAN_KEY }}
+        run: |
+          if [ -z "$CATATAN_KEY" ]; then
+            echo "::error::Secret CATATAN_KEY belum diisi di Settings > Secrets and variables > Actions"
+            exit 1
+          fi
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in android/catatan.jks.enc -out "$RUNNER_TEMP/catatan.jks" -pass env:CATATAN_KEY
+
+      - name: Build APK
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/catatan.jks
+          KEYSTORE_PASSWORD: ${{ secrets.CATATAN_KEY }}
+          KEY_ALIAS: catatan
+          KEY_PASSWORD: ${{ secrets.CATATAN_KEY }}
+        run: |
+          gradle -p android assembleRelease
+          cp android/app/build/outputs/apk/release/app-release.apk catatan-keluarga.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: catatan-keluarga-apk
+          path: catatan-keluarga.apk
+
+      - name: Terbitkan release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-v1.0.${{ github.run_number }}
+          name: Catatan Keluarga 1.0.${{ github.run_number }}
+          body: |
+            APK aplikasi Catatan Keluarga untuk tablet Nara.
+            Unduh **catatan-keluarga.apk** di bawah, lalu buka file itu di tablet untuk memasang.
+          files: catatan-keluarga.apk
+          make_latest: true
