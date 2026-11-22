@@ -31,5 +31,5 @@ Folder `android/` berisi aplikasi Android yang menjalankan catatan harian langsu
 
 - APK dibuat otomatis oleh GitHub Actions (`.github/workflows/android.yml`) setiap ada perubahan di `android/`, lalu diterbitkan di halaman **Releases**.
 - Unduhan terbaru: https://github.com/danapramudya/Catatan-Keluarga/releases/latest/download/catatan-keluarga.apk
-- Kunci tanda tangan disimpan terenkripsi di `android/catatan.jks.enc`; kata sandinya ada di secret repo `CATATAN_KEY`. Jangan ganti kunci ini, supaya pembaruan bisa dipasang di atas versi lama tanpa menghapus catatan.
+- Kunci tanda tangan dibuat otomatis pada build pertama dan disimpan terenkripsi di `android/catatan.jks.enc`; kata sandinya hanya ada di secret repo `CATATAN_KEY` yang diisi pemilik repo. Jangan ganti kunci ini, supaya pembaruan bisa dipasang di atas versi lama tanpa menghapus catatan.
 - Isi aplikasi ada di `android/app/src/main/assets/index.html` (versi Nara: batas perangkat 22.00).

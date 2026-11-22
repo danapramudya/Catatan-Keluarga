@@ -34,7 +34,21 @@ jobs:
             echo "::error::Secret CATATAN_KEY belum diisi di Settings > Secrets and variables > Actions"
             exit 1
           fi
-          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in android/catatan.jks.enc -out "$RUNNER_TEMP/catatan.jks" -pass env:CATATAN_KEY
+          if [ ! -f android/catatan.jks.enc ]; then
+            # Build pertama: buat kunci baru, simpan terenkripsi di repo agar semua build berikutnya memakai kunci yang sama.
+            keytool -genkeypair -keystore "$RUNNER_TEMP/catatan.jks" -storetype PKCS12 -alias catatan \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass:env CATATAN_KEY -keypass:env CATATAN_KEY \
+              -dname "CN=Catatan Keluarga, O=Adena Library, C=ID"
+            openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -in "$RUNNER_TEMP/catatan.jks" -out android/catatan.jks.enc -pass env:CATATAN_KEY
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add android/catatan.jks.enc
+            git commit -m "Simpan kunci tanda tangan APK (terenkripsi) [skip ci]"
+            git push
+          else
+            openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in android/catatan.jks.enc -out "$RUNNER_TEMP/catatan.jks" -pass env:CATATAN_KEY
+          fi
 
       - name: Build APK
         env:
